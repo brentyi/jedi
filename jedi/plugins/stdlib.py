@@ -612,10 +612,23 @@ class DataclassWrapper(ValueWrapper, ClassMixin):
                     d = name.tree_name.get_definition()
                     annassign = d.children[1]
                     if d.type == 'expr_stmt' and annassign.type == 'annassign':
+                        # Skip annotations that start with
+                        annotation_str = annassign.children[1].get_code()
+                        if 'ClassVar' in annotation_str or 'InitVar' in annotation_str:
+                            continue
+                        print(annotation_str)
+
                         if len(annassign.children) < 4:
                             default = None
                         else:
                             default = annassign.children[3]
+                            if default.type == "atom_expr":
+                                print(default.children)
+                                print(default.children[-1])
+                                # print(type(annassign.children[3]))
+                                # print(annassign.children[3])
+                                # print(dir(annassign.children[3]))
+                                # print(annassign.children[3].type)
                         param_names.append(DataclassParamName(
                             parent_context=cls.parent_context,
                             tree_name=name.tree_name,
